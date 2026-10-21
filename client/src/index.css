@@ -532,9 +532,118 @@ button {
 
 .answer-actions {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid var(--border);
+}
+
+.answer-actions .chip-btn {
+  margin-left: auto;
+}
+
+.source-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.source-tag.web {
+  background: color-mix(in srgb, #0ea5e9 14%, transparent);
+  color: #0284c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .source-tag.web {
+    color: #7dd3fc;
+  }
+}
+
+.web-sources {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--code-bg);
+}
+
+.web-sources-title {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.web-sources ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.web-sources a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--text);
+  font-size: 0.84rem;
+  text-decoration: none;
+}
+
+.web-sources a span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.web-sources a svg {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.web-sources a:hover span {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* 🌐 Web search toggle in the composer */
+.web-toggle {
+  flex-shrink: 0;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.web-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.web-toggle.on {
+  border-color: transparent;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .chip-btn {
@@ -922,6 +1031,16 @@ kbd {
   }
 
   .hint {
+    display: none;
+  }
+
+  .web-toggle {
+    width: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .web-toggle span {
     display: none;
   }
 }

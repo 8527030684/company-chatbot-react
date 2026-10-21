@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { askQuestion, uploadPdf } from "./api.js";
+import { askQuestion, clearChat, uploadPdf } from "./api.js";
 import Sidebar from "./components/Sidebar.jsx";
 import ChatWindow from "./components/ChatWindow.jsx";
 import Composer from "./components/Composer.jsx";
@@ -31,11 +31,17 @@ export default function App() {
   const [docs, setDocs] = useState(() =>
     load("chat.docs", []).filter((d) => d.status !== "indexing")
   );
+  // threadId = this chat's id; the server uses it as the node-cache key for memory
+  const [threadId, setThreadId] = useState(() => load("chat.threadId", null) || newId());
+  // 🌐 web search on/off
+  const [webSearch, setWebSearch] = useState(() => load("chat.webSearch", false));
   const [isThinking, setIsThinking] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => save("chat.messages", messages), [messages]);
   useEffect(() => save("chat.docs", docs), [docs]);
+  useEffect(() => save("chat.threadId", threadId), [threadId]);
+  useEffect(() => save("chat.webSearch", webSearch), [webSearch]);
 
   /* ---------------- Upload a PDF ---------------- */
   async function handleUpload(file) {
@@ -55,18 +61,14 @@ export default function App() {
 
   /* ---------------- Ask a question ---------------- */
   async function handleSend(question) {
-    // Last messages go to the server as conversation memory
-    const history = messages
-      .filter((m) => m.role === "user" || m.role === "assistant")
-      .map((m) => ({ role: m.role, content: m.content }));
-
     // Show the question immediately
     setMessages((prev) => [...prev, { id: newId(), role: "user", content: question }]);
     setIsThinking(true);
 
     try {
-      const answer = await askQuestion(question, history);
-      setMessages((prev) => [...prev, { id: newId(), role: "assistant", content: answer }]);
+      // Memory now lives on the server (node-cache), so we only send the threadId
+      const { answer, sources } = await askQuestion(question, threadId, webSearch);
+      setMessages((prev) => [...prev, { id: newId(), role: "assistant", content: answer, sources }]);
     } catch (err) {
       setMessages((prev) => [...prev, { id: newId(), role: "error", content: err.message }]);
     } finally {
@@ -75,6 +77,8 @@ export default function App() {
   }
 
   function handleNewChat() {
+    clearChat(threadId); // server forgets the old chat
+    setThreadId(newId()); // fresh memory for the new chat
     setMessages([]);
     setSidebarOpen(false);
   }
@@ -109,7 +113,13 @@ export default function App() {
 
         <ChatWindow messages={messages} isThinking={isThinking} hasDocs={readyCount > 0} onPick={handleSend} />
 
-        <Composer disabled={isThinking} onSend={handleSend} onUpload={handleUpload} />
+        <Composer
+          disabled={isThinking}
+          onSend={handleSend}
+          onUpload={handleUpload}
+          webSearch={webSearch}
+          onToggleWeb={() => setWebSearch((v) => !v)}
+        />
       </main>
 
       <DropOverlay onDrop={handleUpload} />

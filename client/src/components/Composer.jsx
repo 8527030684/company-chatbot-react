@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import Icon from "./Icon.jsx";
 
-export default function Composer({ disabled, onSend, onUpload }) {
+export default function Composer({ disabled, onSend, onUpload, webSearch, onToggleWeb }) {
   const [text, setText] = useState("");
   const fileInput = useRef(null);
   const textarea = useRef(null);
@@ -52,8 +52,19 @@ export default function Composer({ disabled, onSend, onUpload }) {
           value={text}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
-          placeholder="Ask about your documents…"
+          placeholder={webSearch ? "Ask docs or the web…" : "Ask about your documents…"}
         />
+
+        {/* 🌐 Web search on/off */}
+        <button
+          className={`web-toggle ${webSearch ? "on" : ""}`}
+          onClick={onToggleWeb}
+          aria-pressed={webSearch}
+          title={webSearch ? "Web search is ON" : "Web search is OFF"}
+        >
+          <Icon name="globe" size={16} />
+          <span>Web</span>
+        </button>
 
         <button className="send" onClick={send} disabled={disabled || !text.trim()} aria-label="Send">
           <Icon name="send" size={18} strokeWidth={2.4} />

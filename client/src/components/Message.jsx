@@ -55,7 +55,34 @@ export default function Message({ message }) {
             {message.content}
           </ReactMarkdown>
         </div>
+        {/* Where the answer came from: company docs and/or web links */}
+        {message.sources?.web?.length > 0 && (
+          <div className="web-sources">
+            <div className="web-sources-title">Sources</div>
+            <ol>
+              {message.sources.web.slice(0, 5).map((s) => (
+                <li key={s.url}>
+                  <a href={s.url} target="_blank" rel="noopener noreferrer">
+                    <Icon name="link" size={13} />
+                    <span>{s.title || new URL(s.url).hostname}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
         <div className="answer-actions">
+          {message.sources?.docs && (
+            <span className="source-tag">
+              <Icon name="file" size={13} /> Company docs
+            </span>
+          )}
+          {message.sources?.web?.length > 0 && (
+            <span className="source-tag web">
+              <Icon name="globe" size={13} /> Web search
+            </span>
+          )}
           <button className="chip-btn" onClick={copy}>
             <Icon name={copied ? "check" : "copy"} size={14} /> {copied ? "Copied" : "Copy"}
           </button>

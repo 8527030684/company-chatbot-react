@@ -73,7 +73,7 @@ export default function Sidebar({ docs, onUpload, onNewChat, onRemoveDoc, onClos
         ))}
       </ul>
 
-      <div className="sidebar-foot">Answers come only from your uploaded PDFs.</div>
+      <div className="sidebar-foot">Answers come from your PDFs, plus the web when 🌐 Web is on.</div>
     </aside>
   );
 }
